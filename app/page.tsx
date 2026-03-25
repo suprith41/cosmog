@@ -7,17 +7,20 @@ const howItWorksSteps = [
   {
     number: "01",
     title: "Answer 5 questions",
-    description: "Quick, structured, no fluff.",
+    description:
+      "Go through a short structured interview designed to surface the real friction in your workflow. Questions adapt to your role — an engineer gets different questions than a designer or a sales rep.",
   },
   {
     number: "02",
     title: "AI reads your responses",
-    description: "Finds your specific friction points.",
+    description:
+      "Your answers are analyzed by an AI consultant trained to identify workflow patterns. It looks for the specific combination of slowdowns, bottlenecks, and clarity gaps that are unique to your situation.",
   },
   {
     number: "03",
-    title: "Get your diagnosis",
-    description: "Issues, root cause, and next steps.",
+    title: "Get your personal diagnosis",
+    description:
+      "Receive a detailed breakdown of your top issues, the root cause connecting them, and three concrete actions tailored to your role and context. No generic advice — only what applies to you.",
   },
 ];
 
@@ -280,7 +283,7 @@ export default function Home() {
           <p className="font-ui text-[24px] font-medium uppercase tracking-[0.08em]">
             Cosmog
           </p>
-          <p className="text-sm text-[#4a4a4a]">Built with AI</p>
+          <div aria-hidden="true" />
         </div>
       </footer>
     </main>
