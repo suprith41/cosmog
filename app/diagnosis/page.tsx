@@ -35,56 +35,205 @@ type AnalysisSections = {
   workStyleInsight: string;
 };
 
-const steps: Step[] = [
-  {
-    key: "role",
-    prompt: "Which best describes your role?",
-    helper: "Choose the option that matches your day-to-day work most closely.",
-    options: ["Engineering", "Sales", "Marketing", "Design", "Other"],
+type Role = "Engineering" | "Sales" | "Marketing" | "Design" | "Other";
+
+type RoleQuestionSet = {
+  slowdown: {
+    question: string;
+    options: string[];
+  };
+  bottleneck: {
+    question: string;
+    options: string[];
+  };
+  clarity: {
+    question: string;
+    options: string[];
+  };
+  description: {
+    question: string;
+  };
+};
+
+const questionsByRole: Record<Role, RoleQuestionSet> = {
+  Engineering: {
+    slowdown: {
+      question: "What most often blocks your coding or shipping work?",
+      options: [
+        "Too many meetings",
+        "Unclear technical requirements",
+        "Waiting for code reviews",
+        "Flaky infrastructure or tooling",
+        "Other",
+      ],
+    },
+    bottleneck: {
+      question: "Where does your work most often get stuck?",
+      options: [
+        "Waiting for PR approval",
+        "Unclear acceptance criteria",
+        "Cross-team API dependencies",
+        "No clear technical spec",
+        "Other",
+      ],
+    },
+    clarity: {
+      question: "How well defined are tickets or tasks when you pick them up?",
+      options: [
+        "Very well defined",
+        "Somewhat defined",
+        "Often vague",
+        "Almost never defined",
+      ],
+    },
+    description: {
+      question: "Describe a recent sprint or task where you lost significant time",
+    },
   },
-  {
-    key: "slowdown",
-    prompt: "What most often slows down your work?",
-    helper: "Pick the issue that shows up most often, even if other ones also matter.",
-    options: [
-      "Too many meetings",
-      "Unclear requirements",
-      "Waiting for others",
-      "Too many tools",
-      "Other",
-    ],
+  Sales: {
+    slowdown: {
+      question: "What most often slows down your deals or pipeline?",
+      options: [
+        "Too many internal meetings",
+        "Slow proposal approvals",
+        "Waiting for marketing assets",
+        "CRM and tool overhead",
+        "Other",
+      ],
+    },
+    bottleneck: {
+      question: "Where do deals most often get stuck?",
+      options: [
+        "Waiting for legal or procurement",
+        "No clear decision maker",
+        "Lack of product information",
+        "Cross-team handoff delays",
+        "Other",
+      ],
+    },
+    clarity: {
+      question: "How clear are your targets and quotas each quarter?",
+      options: [
+        "Very clear",
+        "Somewhat clear",
+        "Often unclear",
+        "Completely unclear",
+      ],
+    },
+    description: {
+      question: "Describe a recent deal or situation where the process felt broken",
+    },
   },
-  {
-    key: "bottleneck",
-    prompt: "What usually causes work to get stuck?",
-    helper: "Choose the point where progress most often stalls.",
-    options: [
-      "No clear next step",
-      "Waiting for approval",
-      "Lack of information",
-      "Cross-team dependency",
-      "Other",
-    ],
+  Marketing: {
+    slowdown: {
+      question: "What most often delays your campaigns or content?",
+      options: [
+        "Too many approval rounds",
+        "Unclear briefs from stakeholders",
+        "Waiting for design or copy",
+        "Too many tools and platforms",
+        "Other",
+      ],
+    },
+    bottleneck: {
+      question: "Where does marketing work most often stall?",
+      options: [
+        "Waiting for budget approval",
+        "No clear campaign owner",
+        "Lack of data or insights",
+        "Cross-team content dependencies",
+        "Other",
+      ],
+    },
+    clarity: {
+      question: "How clear are campaign goals when projects are assigned?",
+      options: [
+        "Very clear",
+        "Somewhat clear",
+        "Often unclear",
+        "Completely unclear",
+      ],
+    },
+    description: {
+      question:
+        "Describe a recent campaign or project where execution felt inefficient",
+    },
   },
-  {
-    key: "clarity",
-    prompt: "How clear are your tasks when assigned?",
-    helper: "Answer based on what usually happens, not the best-case week.",
-    options: [
-      "Very clear",
-      "Somewhat clear",
-      "Often unclear",
-      "Completely unclear",
-    ],
+  Design: {
+    slowdown: {
+      question: "What most often slows down your design work?",
+      options: [
+        "Too many revision rounds",
+        "Unclear product requirements",
+        "Waiting for content or copy",
+        "Too many stakeholder opinions",
+        "Other",
+      ],
+    },
+    bottleneck: {
+      question: "Where does design work most often get stuck?",
+      options: [
+        "Waiting for design approval",
+        "No clear design brief",
+        "Lack of user research data",
+        "Engineering handoff issues",
+        "Other",
+      ],
+    },
+    clarity: {
+      question: "How well briefed are you when a design task is assigned?",
+      options: [
+        "Very well briefed",
+        "Somewhat briefed",
+        "Often unclear",
+        "Almost never briefed",
+      ],
+    },
+    description: {
+      question: "Describe a recent design project where the process broke down",
+    },
   },
-  {
-    key: "description",
-    prompt: "Describe a recent situation where work felt inefficient",
-    helper: "A few concrete details help the diagnosis stay specific.",
-    placeholder:
-      "Example: I had to wait two days for approval, then found out a requirement had changed...",
+  Other: {
+    slowdown: {
+      question: "What most often slows down your work?",
+      options: [
+        "Too many meetings",
+        "Unclear requirements",
+        "Waiting for others",
+        "Too many tools",
+        "Other",
+      ],
+    },
+    bottleneck: {
+      question: "What usually causes your work to get stuck?",
+      options: [
+        "No clear next step",
+        "Waiting for approval",
+        "Lack of information",
+        "Cross-team dependency",
+        "Other",
+      ],
+    },
+    clarity: {
+      question: "How clear are your tasks when assigned?",
+      options: [
+        "Very clear",
+        "Somewhat clear",
+        "Often unclear",
+        "Completely unclear",
+      ],
+    },
+    description: {
+      question: "Describe a recent situation where work felt inefficient",
+    },
   },
-];
+};
+
+function getQuestionsForRole(role: string) {
+  return role in questionsByRole
+    ? questionsByRole[role as Role]
+    : questionsByRole.Other;
+}
 
 const initialData: FormData = {
   role: "",
@@ -182,6 +331,40 @@ export default function DiagnosisPage() {
   >("idle");
   const [isStepAnimating, setIsStepAnimating] = useState(false);
   const animationTimers = useRef<number[]>([]);
+  const roleQuestions = getQuestionsForRole(formData.role);
+  const steps: Step[] = [
+    {
+      key: "role",
+      prompt: "Which best describes your role?",
+      helper: "Choose the option that matches your day-to-day work most closely.",
+      options: ["Engineering", "Sales", "Marketing", "Design", "Other"],
+    },
+    {
+      key: "slowdown",
+      prompt: roleQuestions.slowdown.question,
+      helper: "Pick the issue that shows up most often, even if other ones also matter.",
+      options: roleQuestions.slowdown.options,
+    },
+    {
+      key: "bottleneck",
+      prompt: roleQuestions.bottleneck.question,
+      helper: "Choose the point where progress most often stalls.",
+      options: roleQuestions.bottleneck.options,
+    },
+    {
+      key: "clarity",
+      prompt: roleQuestions.clarity.question,
+      helper: "Answer based on what usually happens, not the best-case week.",
+      options: roleQuestions.clarity.options,
+    },
+    {
+      key: "description",
+      prompt: roleQuestions.description.question,
+      helper: "A few concrete details help the diagnosis stay specific.",
+      placeholder:
+        "Example: I had to wait two days for approval, then found out a requirement had changed...",
+    },
+  ];
 
   const currentStep = steps[stepIndex];
   const isLastStep = stepIndex === steps.length - 1;
@@ -197,10 +380,22 @@ export default function DiagnosisPage() {
   );
 
   function updateField(key: QuestionKey, value: string) {
-    setFormData((current) => ({
-      ...current,
-      [key]: value,
-    }));
+    setFormData((current) => {
+      if (key === "role") {
+        return {
+          role: value,
+          slowdown: "",
+          bottleneck: "",
+          clarity: "",
+          description: "",
+        };
+      }
+
+      return {
+        ...current,
+        [key]: value,
+      };
+    });
     setError("");
   }
 
