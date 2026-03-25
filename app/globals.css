@@ -1,0 +1,196 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap");
+@import "tailwindcss";
+
+:root {
+  --background: #f7f4ef;
+  --background-end: #f1ede6;
+  --foreground: #1a1a1a;
+  --muted: #6b6b6b;
+  --accent: #111111;
+  --border: #e8e4de;
+  --font-sans: "DM Sans", "Helvetica Neue", sans-serif;
+  --font-heading: "Cormorant", Georgia, serif;
+  --font-ui: "Montserrat", "Helvetica Neue", sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, monospace;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-heading: var(--font-heading);
+  --font-ui: var(--font-ui);
+  --font-mono: var(--font-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--background);
+}
+
+body {
+  background:
+    radial-gradient(
+      ellipse at top right,
+      #a8d4f5 0%,
+      #c8e6ff 25%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse at bottom left,
+      #f5c8a0 0%,
+      #fddbb8 25%,
+      transparent 55%
+    ),
+    #f0ece4;
+  background-attachment: fixed;
+  min-height: 100vh;
+  background-blend-mode: normal;
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+textarea {
+  resize: vertical;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a[href="/diagnosis"] {
+  color: #ffffff !important;
+}
+
+::selection {
+  background: rgba(15, 23, 42, 0.14);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-ui {
+  font-family: var(--font-ui);
+}
+
+@keyframes subtleLine {
+  0%,
+  100% {
+    transform: scaleX(0.85);
+    opacity: 0.45;
+  }
+
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+.hero-divider {
+  animation: subtleLine 3.8s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeUpCard {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  opacity: 0;
+  animation: fadeUp 0.6s ease forwards;
+}
+
+.animate-nav-drop {
+  animation: slideDown 0.5s ease-out both;
+}
+
+.animate-card-up {
+  opacity: 0;
+  animation: fadeUpCard 0.5s ease forwards;
+}
+
+.scroll-fade {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  will-change: opacity, transform;
+}
+
+.scroll-fade.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.step-panel {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  will-change: transform, opacity;
+}
+
+.step-panel.idle {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.step-panel.exit-left {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.step-panel.exit-right {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.step-panel.enter-right {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.step-panel.enter-left {
+  opacity: 0;
+  transform: translateX(-30px);
+}
