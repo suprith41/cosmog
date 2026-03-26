@@ -28,8 +28,13 @@ type TextStep = {
 
 type Step = ChoiceStep | TextStep;
 
+type ParsedIssue = {
+  title: string;
+  description: string;
+};
+
 type AnalysisSections = {
-  issues: string[];
+  issues: ParsedIssue[];
   rootCause: string;
   actions: string[];
   workStyleInsight: string;
@@ -248,6 +253,35 @@ function isStepComplete(step: Step, formData: FormData) {
   return typeof value === "string" && value.trim().length > 0;
 }
 
+function removeBoldMarkers(text: string) {
+  return text.replace(/\*\*(.*?)\*\*/g, "$1").replace(/\*\*/g, "").trim();
+}
+
+function cleanIssueLine(text: string) {
+  return removeBoldMarkers(text).replace(/^(?:\d+\s*\.\s*)+/, "").trim();
+}
+
+function cleanActionLine(text: string) {
+  return removeBoldMarkers(text).replace(/^[*-]\s*/, "").trim();
+}
+
+function parseIssue(text: string): ParsedIssue {
+  const cleaned = cleanIssueLine(text);
+  const separatorIndex = cleaned.indexOf(":");
+
+  if (separatorIndex === -1) {
+    return {
+      title: cleaned,
+      description: "",
+    };
+  }
+
+  return {
+    title: cleaned.slice(0, separatorIndex).trim(),
+    description: cleaned.slice(separatorIndex + 1).trim(),
+  };
+}
+
 function parseAnalysis(text: string): AnalysisSections {
   const lines = text
     .split("\n")
@@ -282,38 +316,40 @@ function parseAnalysis(text: string): AnalysisSections {
       continue;
     }
 
-    if (currentSection === "issues" && /^\d+\.\s/.test(line)) {
-      issues.push(line.replace(/^\d+\.\s*/, ""));
+    if (currentSection === "issues" && /^\d+\.\s*/.test(line)) {
+      issues.push(cleanIssueLine(line));
       continue;
     }
 
     if (currentSection === "issues" && issues.length) {
-      issues[issues.length - 1] = `${issues[issues.length - 1]} ${line}`;
+      issues[issues.length - 1] =
+        `${issues[issues.length - 1]} ${cleanIssueLine(line)}`.trim();
       continue;
     }
 
-    if (currentSection === "actions" && line.startsWith("- ")) {
-      actions.push(line.slice(2));
+    if (currentSection === "actions" && /^[*-]\s*/.test(line)) {
+      actions.push(cleanActionLine(line));
       continue;
     }
 
     if (currentSection === "actions" && actions.length) {
-      actions[actions.length - 1] = `${actions[actions.length - 1]} ${line}`;
+      actions[actions.length - 1] =
+        `${actions[actions.length - 1]} ${cleanActionLine(line)}`.trim();
       continue;
     }
 
     if (currentSection === "rootCause") {
-      rootCause.push(line);
+      rootCause.push(removeBoldMarkers(line));
       continue;
     }
 
     if (currentSection === "workStyleInsight") {
-      workStyleInsight.push(line);
+      workStyleInsight.push(removeBoldMarkers(line));
     }
   }
 
   return {
-    issues,
+    issues: issues.map(parseIssue),
     rootCause: rootCause.join(" "),
     actions,
     workStyleInsight: workStyleInsight.join(" "),
@@ -641,13 +677,22 @@ export default function DiagnosisPage() {
                       <ol className="grid grid-cols-1 gap-6 md:grid-cols-3">
                         {analysisSections.issues.map((issue, index) => (
                           <li
-                            key={`${issue}-${index}`}
+                            key={`${issue.title}-${issue.description}-${index}`}
                             className="rounded-[12px] border border-[#e8e4de] border-l-[3px] border-l-[#1a1a1a] bg-white p-7 text-sm leading-7 text-[#2f2a25]"
                           >
                             <span className="mr-2 font-semibold text-[#111111]">
                               {index + 1}.
                             </span>
-                            {issue}
+                            <span className="inline-block align-top">
+                              <span className="font-medium text-[#111111]">
+                                {issue.title}
+                              </span>
+                              {issue.description ? (
+                                <span className="block font-light text-[#2f2a25]">
+                                  {issue.description}
+                                </span>
+                              ) : null}
+                            </span>
                           </li>
                         ))}
                       </ol>
