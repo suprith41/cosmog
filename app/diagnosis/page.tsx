@@ -63,173 +63,178 @@ type RoleQuestionSet = {
 const questionsByRole: Record<Role, RoleQuestionSet> = {
   Engineering: {
     slowdown: {
-      question: "What most often blocks your coding or shipping work?",
+      question: "In a typical week, what kills the most productive hours?",
       options: [
-        "Too many meetings",
-        "Unclear technical requirements",
-        "Waiting for code reviews",
-        "Flaky infrastructure or tooling",
+        "Sitting in meetings that don't need me",
+        "Building on top of unclear requirements",
+        "Waiting days for a PR review",
+        "Fighting broken tooling or infra",
         "Other",
       ],
     },
     bottleneck: {
-      question: "Where does your work most often get stuck?",
+      question: "When work stalls completely, what is usually the reason?",
       options: [
-        "Waiting for PR approval",
-        "Unclear acceptance criteria",
-        "Cross-team API dependencies",
-        "No clear technical spec",
+        "PR sitting unreviewed for days",
+        "Ticket had no clear acceptance criteria",
+        "Blocked waiting on another team's API or service",
+        "Nobody wrote down what done looks like",
         "Other",
       ],
     },
     clarity: {
-      question: "How well defined are tickets or tasks when you pick them up?",
+      question: "When a ticket lands in your queue, how complete is it?",
       options: [
-        "Very well defined",
-        "Somewhat defined",
-        "Often vague",
-        "Almost never defined",
-      ],
-    },
-    description: {
-      question: "Describe a recent sprint or task where you lost significant time",
-    },
-  },
-  Sales: {
-    slowdown: {
-      question: "What most often slows down your deals or pipeline?",
-      options: [
-        "Too many internal meetings",
-        "Slow proposal approvals",
-        "Waiting for marketing assets",
-        "CRM and tool overhead",
-        "Other",
-      ],
-    },
-    bottleneck: {
-      question: "Where do deals most often get stuck?",
-      options: [
-        "Waiting for legal or procurement",
-        "No clear decision maker",
-        "Lack of product information",
-        "Cross-team handoff delays",
-        "Other",
-      ],
-    },
-    clarity: {
-      question: "How clear are your targets and quotas each quarter?",
-      options: [
-        "Very clear",
-        "Somewhat clear",
-        "Often unclear",
-        "Completely unclear",
-      ],
-    },
-    description: {
-      question: "Describe a recent deal or situation where the process felt broken",
-    },
-  },
-  Marketing: {
-    slowdown: {
-      question: "What most often delays your campaigns or content?",
-      options: [
-        "Too many approval rounds",
-        "Unclear briefs from stakeholders",
-        "Waiting for design or copy",
-        "Too many tools and platforms",
-        "Other",
-      ],
-    },
-    bottleneck: {
-      question: "Where does marketing work most often stall?",
-      options: [
-        "Waiting for budget approval",
-        "No clear campaign owner",
-        "Lack of data or insights",
-        "Cross-team content dependencies",
-        "Other",
-      ],
-    },
-    clarity: {
-      question: "How clear are campaign goals when projects are assigned?",
-      options: [
-        "Very clear",
-        "Somewhat clear",
-        "Often unclear",
-        "Completely unclear",
+        "Ready to build — everything is there",
+        "Mostly there but always a few gaps",
+        "I spend time figuring out what done means",
+        "It is basically a title and nothing else",
       ],
     },
     description: {
       question:
-        "Describe a recent campaign or project where execution felt inefficient",
+        "Walk me through a specific sprint or task where you lost the most time. What happened, and where did it break down?",
+    },
+  },
+  Sales: {
+    slowdown: {
+      question: "What most often kills your selling time?",
+      options: [
+        "Internal meetings eating the day",
+        "Waiting weeks for proposal sign-off",
+        "No assets from marketing when I need them",
+        "Drowning in CRM updates",
+        "Other",
+      ],
+    },
+    bottleneck: {
+      question: "At what point do deals die or stall most often?",
+      options: [
+        "Stuck in legal or procurement forever",
+        "Can't find who actually makes the decision",
+        "Don't have the product answers prospects need",
+        "Lost in a messy handoff between teams",
+        "Other",
+      ],
+    },
+    clarity: {
+      question: "How well do you understand what is expected of you each quarter?",
+      options: [
+        "Crystal clear targets and playbook",
+        "Clear targets but fuzzy on the how",
+        "Targets shift or arrive late",
+        "I am guessing most of the time",
+      ],
+    },
+    description: {
+      question:
+        "Describe a deal or a week in your pipeline where the process completely broke down. What happened?",
+    },
+  },
+  Marketing: {
+    slowdown: {
+      question: "What most often delays your work from shipping?",
+      options: [
+        "Endless approval rounds",
+        "Briefs that arrive half-baked",
+        "Waiting on design or copy from others",
+        "Managing too many platforms at once",
+        "Other",
+      ],
+    },
+    bottleneck: {
+      question: "Where does a campaign most often grind to a halt?",
+      options: [
+        "Budget stuck waiting for approval",
+        "No single owner driving the campaign",
+        "Flying blind without data or benchmarks",
+        "Dependent on another team that moves slowly",
+        "Other",
+      ],
+    },
+    clarity: {
+      question: "When a campaign brief arrives, how usable is it?",
+      options: [
+        "Complete with goals, audience, and timeline",
+        "Good enough but missing key details",
+        "Vague enough that I have to fill in the gaps",
+        "It is barely a brief at all",
+      ],
+    },
+    description: {
+      question:
+        "Describe a campaign or project that took far longer than it should have. Where did it go wrong?",
     },
   },
   Design: {
     slowdown: {
-      question: "What most often slows down your design work?",
+      question: "What most often stops you from doing your best design work?",
       options: [
-        "Too many revision rounds",
-        "Unclear product requirements",
-        "Waiting for content or copy",
-        "Too many stakeholder opinions",
+        "Feedback that contradicts itself",
+        "Requirements that change mid-design",
+        "Waiting for content that never arrives",
+        "Too many people with opinions",
         "Other",
       ],
     },
     bottleneck: {
-      question: "Where does design work most often get stuck?",
+      question: "What most often brings a design project to a complete stop?",
       options: [
-        "Waiting for design approval",
-        "No clear design brief",
-        "Lack of user research data",
-        "Engineering handoff issues",
+        "Waiting for someone to approve the direction",
+        "No one wrote a proper brief",
+        "Making decisions without user data",
+        "Design gets lost in the engineering handoff",
         "Other",
       ],
     },
     clarity: {
-      question: "How well briefed are you when a design task is assigned?",
+      question: "When a design task is handed to you, how briefed are you?",
       options: [
-        "Very well briefed",
-        "Somewhat briefed",
-        "Often unclear",
-        "Almost never briefed",
+        "Fully briefed with goals and constraints",
+        "Partially briefed — I piece the rest together",
+        "I usually have to extract the brief myself",
+        "I start designing with almost no direction",
       ],
     },
     description: {
-      question: "Describe a recent design project where the process broke down",
+      question:
+        "Describe a recent project where the design process broke down. What was the moment it went off track?",
     },
   },
   Other: {
     slowdown: {
-      question: "What most often slows down your work?",
+      question: "What most often eats into your productive time?",
       options: [
         "Too many meetings",
-        "Unclear requirements",
-        "Waiting for others",
-        "Too many tools",
+        "Work that arrives without context",
+        "Waiting on other people",
+        "Switching between too many tools",
         "Other",
       ],
     },
     bottleneck: {
-      question: "What usually causes your work to get stuck?",
+      question:
+        "When your work stops moving forward, what is usually blocking it?",
       options: [
-        "No clear next step",
-        "Waiting for approval",
-        "Lack of information",
-        "Cross-team dependency",
+        "No clear next step defined",
+        "Waiting for someone to approve something",
+        "Missing information to proceed",
+        "Dependent on another team entirely",
         "Other",
       ],
     },
     clarity: {
-      question: "How clear are your tasks when assigned?",
+      question: "When work is assigned to you, how clear is it?",
       options: [
-        "Very clear",
-        "Somewhat clear",
-        "Often unclear",
-        "Completely unclear",
+        "Very clear — I know exactly what to do",
+        "Mostly clear with some gaps",
+        "Unclear enough that I lose time figuring it out",
+        "Completely unclear almost every time",
       ],
     },
     description: {
-      question: "Describe a recent situation where work felt inefficient",
+      question:
+        "Describe a specific moment in the last month where your work felt completely broken. What happened?",
     },
   },
 };
@@ -371,7 +376,7 @@ export default function DiagnosisPage() {
   const steps: Step[] = [
     {
       key: "role",
-      prompt: "Which best describes your role?",
+      prompt: "What best describes your day-to-day role?",
       helper: "Choose the option that matches your day-to-day work most closely.",
       options: ["Engineering", "Sales", "Marketing", "Design", "Other"],
     },
