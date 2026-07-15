@@ -1,0 +1,9 @@
+/*
+ * Route-level stylesheet entry.
+ *
+ * The diagnosis UI is defined in the shared stylesheet so its palette and
+ * typography stay aligned with the landing page. Importing it through this
+ * route-specific entry also gives the Next.js dev server a direct CSS
+ * dependency for /diagnosis, preventing stale global-style chunks during HMR.
+ */
+@import "../globals.css";

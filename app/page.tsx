@@ -70,10 +70,10 @@ export default function Home() {
           backgroundColor: "transparent",
         }}
       >
-        <div className="flex w-full items-center justify-between px-8 py-4">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4 sm:px-8">
           <Link
             href="/"
-            className="font-ui text-[24px] font-medium uppercase tracking-[0.08em]"
+            className="font-ui text-[30px] font-medium uppercase tracking-[0.08em]"
           >
             Cosmog
           </Link>

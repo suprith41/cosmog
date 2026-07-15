@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import "./diagnosis.css";
 
 type FormData = {
   role: string;
@@ -557,38 +559,73 @@ export default function DiagnosisPage() {
   }, []);
 
   return (
-    <main className="px-6 pb-24 pt-28 text-[#1a1a1a] sm:px-8 sm:pb-28 sm:pt-32">
-      <div
-        className={`mx-auto w-full ${
-          isResultsView ? "max-w-[1280px]" : "max-w-[580px]"
-        }`}
-      >
-        <div
-          className={`animate-card-up ${
-            isResultsView
-              ? "bg-transparent p-0"
-              : "rounded-[28px] border border-[#ece7df] bg-white p-7 shadow-[0_30px_90px_rgba(84,63,30,0.09)] sm:p-10"
-          }`}
-        >
-          {!analysis || !analysisSections ? (
-            <>
+    <main className={`diagnosis-shell ${isResultsView ? "diagnosis-shell--results" : ""}`}>
+      <div className="diagnosis-noise" aria-hidden="true" />
+      <div className="diagnosis-glow diagnosis-glow--one" aria-hidden="true" />
+      <div className="diagnosis-glow diagnosis-glow--two" aria-hidden="true" />
+
+      <header className="diagnosis-nav">
+        <Link href="/" className="diagnosis-brand">Cosmog</Link>
+        <div className="diagnosis-nav__status">
+          <span className="diagnosis-nav__pulse" aria-hidden="true" />
+          {isResultsView ? "Analysis complete" : "Workflow scan"}
+        </div>
+      </header>
+
+      {!analysis || !analysisSections ? (
+        <div className="diagnosis-layout">
+          <aside className="diagnosis-rail" aria-label="Diagnosis progress">
+            <div className="diagnosis-sculpture" aria-hidden="true">
+              <div className="diagnosis-sculpture__ring diagnosis-sculpture__ring--one" />
+              <div className="diagnosis-sculpture__ring diagnosis-sculpture__ring--two" />
+              <div className="diagnosis-sculpture__core">✦</div>
+            </div>
+
+            <div className="diagnosis-rail__copy">
+              <p className="diagnosis-kicker">Signal collection</p>
+              <h2>Five answers. One clearer picture.</h2>
+              <p>
+                Each response adds another layer to your personal workflow map.
+              </p>
+            </div>
+
+            <ol className="diagnosis-progress">
+              {steps.map((step, index) => {
+                const isActive = index === stepIndex;
+                const isComplete = index < stepIndex;
+
+                return (
+                  <li
+                    key={step.key}
+                    className={`${isActive ? "is-active" : ""} ${isComplete ? "is-complete" : ""}`}
+                    aria-current={isActive ? "step" : undefined}
+                  >
+                    <span>{isComplete ? "✓" : String(index + 1).padStart(2, "0")}</span>
+                    <i aria-hidden="true" />
+                  </li>
+                );
+              })}
+            </ol>
+          </aside>
+
+          <section className="question-scene">
+            <div className="question-card animate-card-up">
+              <div className="question-card__depth" aria-hidden="true" />
+              <div className="question-card__header">
+                <p>Question {String(stepIndex + 1).padStart(2, "0")}</p>
+                <span>{Math.round(((stepIndex + 1) / steps.length) * 100)}% mapped</span>
+              </div>
+
               <div className={`step-panel ${stepMotion}`}>
-                <div className="text-center">
-                  <p className="font-ui text-sm text-[#6b6b6b]">
-                    Step {stepIndex + 1} of {steps.length}
-                  </p>
-                  <h1 className="mt-4 font-heading text-[clamp(32px,4vw,48px)] font-light italic leading-[1.2] tracking-tight text-[#1a1a1a] text-balance">
-                    {currentStep.prompt}
-                  </h1>
-                  <p className="mx-auto mt-4 max-w-[460px] text-sm leading-7 text-[#6b6b6b]">
-                    {currentStep.helper}
-                  </p>
+                <div className="question-intro">
+                  <h1>{currentStep.prompt}</h1>
+                  <p>{currentStep.helper}</p>
                 </div>
 
-                <div className="mt-10">
+                <div className="question-inputs">
                   {"options" in currentStep ? (
-                    <div className="space-y-3">
-                      {currentStep.options.map((option) => {
+                    <div className="choice-grid">
+                      {currentStep.options.map((option, optionIndex) => {
                         const selected = formData[currentStep.key] === option;
 
                         return (
@@ -596,45 +633,44 @@ export default function DiagnosisPage() {
                             key={option}
                             type="button"
                             onClick={() => updateField(currentStep.key, option)}
-                            className={`w-full rounded-[18px] border px-5 py-4 text-left font-ui text-[15px] leading-7 transition duration-200 ease-out ${
-                              selected
-                                ? "border-[#111111] bg-[#111111] text-white"
-                                : "border-[#e0ddd8] bg-white text-[#1a1a1a] hover:translate-x-[6px] hover:shadow-[0_14px_28px_rgba(17,17,17,0.06)]"
-                            }`}
+                            className={`choice-card ${selected ? "is-selected" : ""}`}
+                            aria-pressed={selected}
                           >
-                            {option}
+                            <span className="choice-card__index">
+                              {String(optionIndex + 1).padStart(2, "0")}
+                            </span>
+                            <span className="choice-card__text">{option}</span>
+                            <span className="choice-card__mark" aria-hidden="true">
+                              {selected ? "✦" : "↗"}
+                            </span>
                           </button>
                         );
                       })}
                     </div>
                   ) : (
-                    <label className="block">
-                      <span className="sr-only">{currentStep.prompt}</span>
+                    <label className="story-field">
+                      <span>Describe the moment</span>
                       <textarea
                         value={formData.description}
-                        onChange={(event) =>
-                          updateField("description", event.target.value)
-                        }
-                        rows={6}
+                        onChange={(event) => updateField("description", event.target.value)}
+                        rows={7}
                         placeholder={currentStep.placeholder}
-                        className="w-full border-0 border-b border-[#ddd7cf] bg-transparent px-0 pb-4 text-[15px] leading-8 text-[#1a1a1a] outline-none transition placeholder:text-[#9a948b] focus:border-[#111111]"
                       />
+                      <small>{formData.description.length} characters captured</small>
                     </label>
                   )}
                 </div>
 
-                {error ? (
-                  <p className="mt-6 text-center text-sm text-[#8a4b40]">{error}</p>
-                ) : null}
+                {error ? <p className="diagnosis-error">{error}</p> : null}
 
-                <div className="mt-10 flex items-center justify-between gap-3">
+                <div className="question-actions">
                   <button
                     type="button"
                     onClick={handleBack}
                     disabled={stepIndex === 0 || isSubmitting || isStepAnimating}
-                    className="inline-flex min-w-24 items-center justify-center rounded-full border border-[#dfdad2] bg-white px-5 py-3 font-ui text-sm font-medium text-[#44403b] transition hover:shadow-[0_10px_22px_rgba(17,17,17,0.05)] disabled:cursor-not-allowed disabled:opacity-40"
+                    className="diagnosis-button diagnosis-button--secondary"
                   >
-                    Back
+                    <span aria-hidden="true">←</span> Back
                   </button>
 
                   {isLastStep ? (
@@ -642,140 +678,139 @@ export default function DiagnosisPage() {
                       type="button"
                       onClick={handleSubmit}
                       disabled={isSubmitting || isStepAnimating}
-                      className="inline-flex min-w-36 items-center justify-center rounded-full bg-[#111111] px-6 py-3 font-ui text-sm font-medium text-white transition hover:bg-[#000000] disabled:cursor-wait disabled:opacity-70"
+                      className="diagnosis-button diagnosis-button--primary"
                     >
-                      {isSubmitting ? "Generating..." : "Generate diagnosis"}
+                      {isSubmitting ? (
+                        <>Reading signals <span className="button-loader" aria-hidden="true" /></>
+                      ) : (
+                        <>Generate diagnosis <span aria-hidden="true">✦</span></>
+                      )}
                     </button>
                   ) : (
                     <button
                       type="button"
                       onClick={handleNext}
                       disabled={isStepAnimating}
-                      className="inline-flex min-w-24 items-center justify-center rounded-full bg-[#111111] px-6 py-3 font-ui text-sm font-medium text-white transition hover:bg-[#000000] disabled:opacity-70"
+                      className="diagnosis-button diagnosis-button--primary"
                     >
-                      Next
+                      Next signal <span aria-hidden="true">→</span>
                     </button>
                   )}
                 </div>
               </div>
-            </>
-          ) : (
-            <>
-              <div className="px-0 py-[60px] md:px-10 lg:px-12">
-                <div className="text-center">
-                  <p className="font-ui text-sm text-[#6b6b6b]">Diagnosis complete</p>
-                  <h1 className="mt-4 font-heading text-3xl font-light italic leading-tight tracking-tight text-balance sm:text-4xl">
-                    Your workflow diagnosis
-                  </h1>
-                  <p className="mx-auto mt-4 max-w-[640px] text-sm leading-7 text-[#6b6b6b]">
-                    A structured diagnosis generated from the five answers you
-                    provided.
-                  </p>
-                </div>
-
-                <div className="mt-12">
-                  <div className="mb-12">
-                    <h2 className="mb-6 font-ui text-[11px] font-normal uppercase tracking-[0.2em] text-[#9a8f85]">
-                      TOP ISSUES
-                    </h2>
-                    {analysisSections.issues.length ? (
-                      <ol className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                        {analysisSections.issues.map((issue, index) => (
-                          <li
-                            key={`${issue.title}-${issue.description}-${index}`}
-                            className="rounded-[12px] border border-[#e8e4de] border-l-[3px] border-l-[#1a1a1a] bg-white p-7 text-sm leading-7 text-[#2f2a25]"
-                          >
-                            <span className="mr-2 font-semibold text-[#111111]">
-                              {index + 1}.
-                            </span>
-                            <span className="inline-block align-top">
-                              <span className="font-medium text-[#111111]">
-                                {issue.title}
-                              </span>
-                              {issue.description ? (
-                                <span className="block font-light text-[#2f2a25]">
-                                  {issue.description}
-                                </span>
-                              ) : null}
-                            </span>
-                          </li>
-                        ))}
-                      </ol>
-                    ) : (
-                      <p className="rounded-[12px] border border-[#e8e4de] bg-white p-7 text-sm leading-7 text-[#2f2a25]">
-                        The response did not include a separately parsed issues list.
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="mb-12">
-                    <h2 className="mb-6 font-ui text-[11px] font-normal uppercase tracking-[0.2em] text-[#9a8f85]">
-                      ROOT CAUSE
-                    </h2>
-                    <p className="rounded-[12px] bg-[#f5f2ec] px-10 py-9 text-[17px] leading-[1.8] text-[#2f2a25]">
-                      {analysisSections.rootCause || analysis}
-                    </p>
-                  </div>
-
-                  <div>
-                    <h2 className="mb-6 font-ui text-[11px] font-normal uppercase tracking-[0.2em] text-[#9a8f85]">
-                      ACTIONS
-                    </h2>
-                    {analysisSections.actions.length ? (
-                      <ul className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                        {analysisSections.actions.map((action, index) => (
-                          <li
-                            key={`${action}-${index}`}
-                            className="rounded-[12px] border border-[#e8e4de] bg-white p-7 text-sm leading-7 text-[#2f2a25]"
-                          >
-                            {action}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="rounded-[12px] border border-[#e8e4de] bg-white p-7 text-sm leading-7 text-[#2f2a25]">
-                        The response did not include a separately parsed action list.
-                      </p>
-                    )}
-                  </div>
-
-                  {analysisSections.workStyleInsight ? (
-                    <div className="mt-12">
-                      <h2 className="mb-6 font-ui text-[11px] font-normal uppercase tracking-[0.2em] text-[#9a8f85]">
-                        WORK STYLE INSIGHT
-                      </h2>
-                      <p className="rounded-[12px] bg-[#1a1a1a] px-10 py-9 text-base leading-[1.8] text-white">
-                        {analysisSections.workStyleInsight}
-                      </p>
-                    </div>
-                  ) : null}
-                </div>
-
-                {!hasStructuredAnalysis ? (
-                  <div className="mt-8">
-                    <h2 className="font-heading text-base font-semibold italic tracking-[0.08em] text-[#6b6b6b]">
-                      FULL RESPONSE
-                    </h2>
-                    <pre className="mt-4 whitespace-pre-wrap rounded-[20px] border border-[#ece7df] bg-[#fcfbf8] px-5 py-4 text-sm leading-7 text-[#2f2a25]">
-                      {analysis}
-                    </pre>
-                  </div>
-                ) : null}
-
-                <div className="mt-10 text-center">
-                  <button
-                    type="button"
-                    onClick={handleRestart}
-                    className="font-ui text-sm font-medium text-[#6b6b6b] underline decoration-[#cfc9c1] underline-offset-4 transition hover:text-[#111111]"
-                  >
-                    Start over
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
+            </div>
+          </section>
         </div>
-      </div>
+      ) : (
+        <div className="results-wrap animate-card-up">
+          <header className="results-hero">
+            <div>
+              <p className="diagnosis-kicker">Your pattern map is ready</p>
+              <h1>Your workflow diagnosis.</h1>
+              <p className="results-hero__copy">
+                The signals in your five answers point to the following friction,
+                root cause, and practical next moves.
+              </p>
+            </div>
+            <div className="results-emblem" aria-hidden="true">
+              <span>✦</span>
+              <i />
+              <b>03</b>
+            </div>
+          </header>
+
+          <section className="report-section">
+            <div className="report-heading">
+              <span>01</span>
+              <div><p>Detected patterns</p><h2>Top friction points</h2></div>
+            </div>
+            {analysisSections.issues.length ? (
+              <ol className="issue-grid">
+                {analysisSections.issues.map((issue, index) => (
+                  <li key={`${issue.title}-${issue.description}-${index}`} className={`issue-card issue-card--${index + 1}`}>
+                    <span className="issue-card__number">0{index + 1}</span>
+                    <div>
+                      <h3>{issue.title}</h3>
+                      {issue.description ? <p>{issue.description}</p> : null}
+                    </div>
+                    <span className="issue-card__orb" aria-hidden="true" />
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p className="report-fallback">The response did not include a separately parsed issues list.</p>
+            )}
+          </section>
+
+          <section className="report-section">
+            <div className="report-heading">
+              <span>02</span>
+              <div><p>The connecting signal</p><h2>Root cause</h2></div>
+            </div>
+            <div className="root-cause-panel">
+              <div className="root-cause-panel__visual" aria-hidden="true">
+                <span className="root-node root-node--one" />
+                <span className="root-node root-node--two" />
+                <span className="root-node root-node--three" />
+                <span className="root-line root-line--one" />
+                <span className="root-line root-line--two" />
+                <strong>✦</strong>
+              </div>
+              <p>{analysisSections.rootCause || analysis}</p>
+            </div>
+          </section>
+
+          <section className="report-section">
+            <div className="report-heading">
+              <span>03</span>
+              <div><p>Your next moves</p><h2>Actions to take now</h2></div>
+            </div>
+            {analysisSections.actions.length ? (
+              <ul className="action-stack">
+                {analysisSections.actions.map((action, index) => (
+                  <li key={`${action}-${index}`}>
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <p>{action}</p>
+                    <i aria-hidden="true">↗</i>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="report-fallback">The response did not include a separately parsed action list.</p>
+            )}
+          </section>
+
+          {analysisSections.workStyleInsight ? (
+            <section className="insight-report">
+              <div>
+                <p className="diagnosis-kicker diagnosis-kicker--light">A note about how you work</p>
+                <h2>Work style insight</h2>
+              </div>
+              <blockquote>{analysisSections.workStyleInsight}</blockquote>
+              <span className="insight-report__star" aria-hidden="true">✦</span>
+            </section>
+          ) : null}
+
+          {!hasStructuredAnalysis ? (
+            <section className="report-section">
+              <div className="report-heading">
+                <span>••</span>
+                <div><p>Unstructured analysis</p><h2>Full response</h2></div>
+              </div>
+              <pre className="full-response">{analysis}</pre>
+            </section>
+          ) : null}
+
+          <div className="results-actions">
+            <button type="button" onClick={handleRestart} className="diagnosis-button diagnosis-button--primary">
+              Start a new diagnosis <span aria-hidden="true">↻</span>
+            </button>
+            <Link href="/" className="diagnosis-button diagnosis-button--secondary">
+              Back to Cosmog
+            </Link>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
